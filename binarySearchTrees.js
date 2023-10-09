@@ -27,7 +27,6 @@ class Tree {
 		const middle = Math.floor(sorted.length / 2);
 		const leftBranch = values.slice(0, middle);
 		const rightBranch = values.slice(middle + 1, values.length);
-		console.log(middle, leftBranch, rightBranch);
 
 		return new Node(
 			values[middle],
@@ -37,7 +36,7 @@ class Tree {
 	};
 
 	// Optionally add a prettyPrint function, provided by TOP to visually the tree in the console.
-	prettyPrint = (node, prefix = '', isLeft = true) => {
+	prettyPrint = (node = this.root, prefix = '', isLeft = true) => {
 		if (node === null) {
 			return;
 		}
@@ -72,9 +71,57 @@ class Tree {
 
 	// Delete method that finds a node and deletes it, moving childen appropriately.
 
-	// Find method that accepts a value as a parameter then returns the node with the given value or null if not found.
+	delete(value, node = this.root, prevNode = null, isLeft = null) {
+		if (value != node.data && !node.left && !node.right) return null;
+		if (value < node.data) return this.delete(value, node.left, node, true);
+		if (value > node.data)
+			return this.delete(value, node.right, node, false);
+		if (value === node.data && node.right === null && isLeft)
+			return (prevNode.left = node.left);
+		if (value === node.data) {
+			return (node.data = findSuccessor(node.right));
+		}
+
+		function findSuccessor(node) {
+			let successor, previous;
+			while (!successor) {
+				if (node.left) {
+					previous = node;
+					node = node.left;
+				} else {
+					successor = node.data;
+					previous.left = node.right;
+				}
+			}
+			return successor;
+		}
+	}
+
+	find(value) {
+		let current = this.root;
+		let found = false;
+		if (value === current.data) return current;
+		while (!found) {
+			//Line to log search process console.log(`Looking for ${value} at ${current.data}`);
+			if (current.data === value) {
+				found = true;
+				break;
+			}
+			if (!current.left && !current.right) break;
+			if (current.data > value && current.left) current = current.left;
+			if (current.data < value && current.right) current = current.right;
+			if (
+				(current.data > value && !current.left) ||
+				(current.data < value && !current.right)
+			)
+				break;
+		}
+		return found ? current : null;
+	}
 
 	// Level order method that takes a function as a parameter and goes over the tree in level-order passing the value of each node as an argument to the parameter function. Use an Array as a queue.
 
 	//Inorder, preorder, and postorder methods that accept a function
 }
+
+export { Tree };
