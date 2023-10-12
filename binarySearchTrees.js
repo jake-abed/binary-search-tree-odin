@@ -120,6 +120,22 @@ class Tree {
 	}
 
 	// Level order method that takes a function as a parameter and goes over the tree in level-order passing the value of each node as an argument to the parameter function. Use an Array as a queue.
+	levelOrder(callback) {
+		let queue = [this.root];
+		let nextQueue = [];
+		while (queue.length > 0 || nextQueue.length > 0) {
+			if (queue.length > 0) {
+				let current = queue.shift();
+				callback(current.data);
+				if (current.left !== null) nextQueue.push(current.left);
+				if (current.right !== null) nextQueue.push(current.right);
+			}
+			if (queue.length === 0) {
+				queue = nextQueue;
+				nextQueue = [];
+			}
+		}
+	}
 
 	//Inorder, preorder, and postorder methods that accept a function
 }
