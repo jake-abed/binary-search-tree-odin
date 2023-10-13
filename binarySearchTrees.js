@@ -17,11 +17,7 @@ class Tree {
 		this.root = this.buildTree(values);
 	}
 
-	// buildTree function ingests an unsorted array, then:
-	//  1) Deletes dupes
-	//  2) Sorts the array
-	//  3) Returns a balanced binary search tree starting from the level-0 root node.
-	buildTree = (values) => {
+	buildTree(values) {
 		if (values?.length === 0) return null;
 		const sorted = values.sort((a, b) => a - b);
 		const middle = Math.floor(sorted.length / 2);
@@ -33,10 +29,10 @@ class Tree {
 			this.buildTree(leftBranch),
 			this.buildTree(rightBranch)
 		);
-	};
+	}
 
-	// Optionally add a prettyPrint function, provided by TOP to visually the tree in the console.
-	prettyPrint = (node = this.root, prefix = '', isLeft = true) => {
+	// prettyPrint function provided by Odin, but modified slightly.
+	prettyPrint(node = this.root, prefix = '', isLeft = true) {
 		if (node === null) {
 			return;
 		}
@@ -55,9 +51,8 @@ class Tree {
 				true
 			);
 		}
-	};
+	}
 
-	// Insert method that inserts a value at the correct position.
 	insert(value, node = this.root) {
 		if (value === node.data)
 			return console.log(`${value} is already in the tree.`);
@@ -68,8 +63,6 @@ class Tree {
 		if (value < node.data) return this.insert(value, node.left);
 		else return this.insert(value, node.right);
 	}
-
-	// Delete method that finds a node and deletes it, moving childen appropriately.
 
 	delete(value, node = this.root, prevNode = null, isLeft = null) {
 		if (value != node.data && !node.left && !node.right) return null;
@@ -102,7 +95,6 @@ class Tree {
 		let found = false;
 		if (value === current.data) return current;
 		while (!found) {
-			//Line to log search process console.log(`Looking for ${value} at ${current.data}`);
 			if (current.data === value) {
 				found = true;
 				break;
@@ -119,7 +111,6 @@ class Tree {
 		return found ? current : null;
 	}
 
-	// Level order method that takes a function as a parameter and goes over the tree in level-order passing the value of each node as an argument to the parameter function. Use an Array as a queue.
 	levelOrder(callback) {
 		let queue = [this.root];
 		let nextQueue = [];
@@ -137,7 +128,35 @@ class Tree {
 		}
 	}
 
-	//Inorder, preorder, and postorder methods that accept a function
+	inorder(callback, node = this.root) {
+		if (node.left === null && node.right === null) {
+			callback(node.data);
+			return;
+		}
+		if (node.left !== null) this.inorder(callback, node.left);
+		callback(node.data);
+		if (node.right !== null) this.inorder(callback, node.right);
+	}
+
+	preorder(callback, node = this.root) {
+		if (node.left === null && node.right === null) {
+			callback(node.data);
+			return;
+		}
+		callback(node.data);
+		if (node.left !== null) this.preorder(callback, node.left);
+		if (node.right !== null) this.preorder(callback, node.right);
+	}
+
+	postorder(callback, node = this.root) {
+		if (node.left === null && node.right === null) {
+			callback(node.data);
+			return;
+		}
+		if (node.left !== null) this.postorder(callback, node.left);
+		if (node.right !== null) this.postorder(callback, node.right);
+		callback(node.data);
+	}
 }
 
 export { Tree };
