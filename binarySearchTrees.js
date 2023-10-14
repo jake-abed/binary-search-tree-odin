@@ -71,19 +71,34 @@ class Tree {
 			return this.delete(value, node.right, node, false);
 		if (value === node.data && node.right === null && isLeft)
 			return (prevNode.left = node.left);
-		if (value === node.data) {
-			return (node.data = findSuccessor(node.right));
-		}
+		if (
+			value === node.data &&
+			node.right === null &&
+			node.left === null &&
+			!isLeft
+		)
+			return (prevNode.right = null);
+		if (value === node.data && !node.left)
+			if (value === node.data) {
+				return (node.data = findSuccessor(node.right, node));
+			}
 
-		function findSuccessor(node) {
+		function findSuccessor(node, nodeToBeDeleted) {
 			let successor, previous;
+			let leftFound = false;
 			while (!successor) {
 				if (node.left) {
+					leftFound = true;
 					previous = node;
 					node = node.left;
 				} else {
 					successor = node.data;
-					previous.left = node.right;
+					if (leftFound) {
+						previous.left = node.right;
+					} else {
+						previous = nodeToBeDeleted;
+						previous.right = node.right;
+					}
 				}
 			}
 			return successor;
@@ -156,6 +171,56 @@ class Tree {
 		if (node.left !== null) this.postorder(callback, node.left);
 		if (node.right !== null) this.postorder(callback, node.right);
 		callback(node.data);
+	}
+
+	// Height function accepts a node and returns it's height.
+
+	height(node = this.root) {
+		let height = 1;
+		let heights = new Map();
+		heights.set(height, height);
+		function descendNodes(node, heightSoFar) {
+			heightSoFar++;
+			if (!heights.has(heightSoFar))
+				heights.set(heightSoFar, heightSoFar);
+			if (node.left) descendNodes(node.left, heightSoFar);
+			if (node.right) descendNodes(node.right, heightSoFar);
+			return;
+		}
+		if (node.left) descendNodes(node.left, height);
+		if (node.right) descendNodes(node.right, height);
+		return Array.from(heights.keys()).sort((a, b) => b - a)[0];
+	}
+
+	// Depth function that returns how far in from the root the node is.
+	depth(node) {
+		let currentDepth = 0;
+		let currentNode = this.root;
+		while (currentNode !== node) {
+			console.log(currentNode);
+			currentDepth++;
+			node.data < currentNode.data
+				? (currentNode = currentNode.left)
+				: (currentNode = currentNode.right);
+		}
+		return ++currentDepth;
+	}
+
+	isBalanced() {
+		let height = 1;
+		let heights = new Map();
+		function mapBottomNodes(node, heightSoFar) {
+			heightSoFar++;
+			if (!node.left && !node.right) {
+				return heights.set(heightSoFar, heightSoFar);
+			}
+			if (node.left) mapBottomNodes(node.left, heightSoFar);
+			if (node.right) mapBottomNodes(node.right, heightSoFar);
+			return;
+		}
+		mapBottomNodes(this.root, height);
+		const sortedDepths = Array.from(heights.keys()).sort((a, b) => b - a);
+		return sortedDepths[0] - sortedDepths[sortedDepths.length - 1] <= 1;
 	}
 }
 
