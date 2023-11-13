@@ -222,6 +222,40 @@ class Tree {
 		const sortedDepths = Array.from(heights.keys()).sort((a, b) => b - a);
 		return sortedDepths[0] - sortedDepths[sortedDepths.length - 1] <= 1;
 	}
+
+	rebalance() {
+		if (this.isBalanced()) return;
+		const inOrderValues = [];
+		this.inorder((value) => inOrderValues.push(value));
+		this.root = this.buildTree(inOrderValues);
+	}
 }
 
-export { Tree };
+const randomNumbersUnder101 = (integer) => {
+	const numberList = []
+	while (numberList.length < integer) {
+		const randomNumber = Math.floor(Math.random() * 101);
+		if (!numberList.includes(randomNumber)) numberList.push(randomNumber);
+	}
+	return numberList;
+}
+
+const testTree = new Tree(randomNumbersUnder101(20));
+testTree.prettyPrint();
+console.log(testTree.isBalanced());
+testTree.levelOrder((value) => console.log(value));
+testTree.inorder((value) => console.log(value));
+testTree.preorder((value) => console.log(value));
+testTree.postorder((value) => console.log(value));
+testTree.insert(105);
+testTree.insert(1022);
+testTree.insert(111);
+testTree.insert(129);
+testTree.prettyPrint();
+console.log(testTree.isBalanced());
+testTree.rebalance();
+console.log(testTree.isBalanced());
+testTree.levelOrder((value) => console.log(value));
+testTree.inorder((value) => console.log(value));
+testTree.preorder((value) => console.log(value));
+testTree.postorder((value) => console.log(value));
